@@ -1,36 +1,30 @@
 package api_test
 
 import (
-	"github.com/saspallow/gowebboard/api"
 	"testing"
-	"time"
+	
+	"github.com/saspallow/gowebboard/api"
 )
 
 func TestValidateForumCreateRequest(t *testing.T) {
-	req := api.ForumCreateRequest{
-		Title: "",
-		CreateAt: time.Now(),
-	}
-	err := req.Validate()
-	if err == nil {
-		t.Errorf("Expected error not nil; got nil")
+
+	cases := []struct {
+		req api.ForumCreateRequest
+		hasError bool
+	}{
+		{api.ForumCreateRequest{}, true},
+		{api.ForumCreateRequest{Title: "q"}, true},
+		{api.ForumCreateRequest{Title: "123"}, true},
+		{api.ForumCreateRequest{Title: "test1234"}, false},
 	}
 
-	req = api.ForumCreateRequest{
-		Title: "a",
-		CreateAt: time.Now(),
-	}
-	err = req.Validate()
-	if err == nil {
-		t.Errorf("Expected error not nil; got nil")
-	}
-
-	req = api.ForumCreateRequest{
-		Title: "test1234",
-		CreateAt: time.Now(),
-	}
-	err = req.Validate()
-	if err != nil {
-		t.Errorf("Expected error to be nil; got %v", err)
+	for _, c := range cases {
+		err := c.req.Validate()
+		if c.hasError && err == nil {
+			t.Errorf("Expected has error; got nul")
+		}
+		if !c.hasError && err != nil {
+			t.Errorf("Expected not error; got error")
+		}
 	}
 }

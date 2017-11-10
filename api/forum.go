@@ -1,59 +1,61 @@
 package api
 
 import (
-	"time"
+	"fmt"
+	"unicode/utf8"
 )
 
+// ForumController is the forum controller interface
 type ForumController interface {
 	Create(*ForumCreateRequest) (*ForumCreateResponse, error)
 	Update(*ForumUpdateRequest) (*ForumUpdateResponse, error)
-	List() (*ForumListReponse, error)
-	Delete(int) (*ForumDeleteResponse, error)
-	GET(int) (*Forum, error)
+	List(*ForumListRequest) (*ForumListResponse, error)
+	Delete()
+	Get()
 }
 
-// Create
-// ForumCreateRequest is create request for ForumController
+// ForumCreateRequest is the create request for forum controller
 type ForumCreateRequest struct {
 	Title string
-	CreateAt time.Time
 }
 
-// Validate reuest
+// Validate validates request
 func (req *ForumCreateRequest) Validate() error {
+	if len(req.Title) == 0 {
+		return fmt.Errorf("title required")
+	}
+	if utf8.RuneCountInString(req.Title) < 4 {
+		return fmt.Errorf("title must have >= 4 chars")
+	}
 	return nil
 }
 
-// ForumCreateResponse is create response for ForumController
+// ForumCreateResponse is the create response for forum controller
 type ForumCreateResponse struct {
 	ID int
 }
 
-// Update
-// ForumUpdateRequest is update request for ForumController
+// ForumUpdateRequest is the update request for forum controller
 type ForumUpdateRequest struct {
-	ID int
+	ID    int
 	Title string
 }
 
-// ForumUpdateResponse is update response for ForumController
+// ForumUpdateResponse is the update response for forum controller
 type ForumUpdateResponse struct {
-
 }
 
-// List
-// ForumListReponse is list response for ForumController
-type ForumListReponse struct {
-	Forum []*Forum
+// ForumListRequest is the list request for forum controller
+type ForumListRequest struct {
 }
 
-// ForumDeleteResponse is delete response for ForumController
-type ForumDeleteResponse struct {
-
+// ForumListResponse is the list response for forum controller
+type ForumListResponse struct {
+	Forums []*ForumItem
 }
 
-// Forum type
-type Forum struct {
-	ID int
+// ForumItem is the forum list item
+type ForumItem struct {
+	ID    int
 	Title string
 }
